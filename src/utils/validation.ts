@@ -61,9 +61,11 @@ function buildFieldSchema(field: FieldDefinition): yup.AnySchema {
     const isMatch = (val: any) =>
       inList ? inList.includes(val) : val === equals;
 
+    const baseSchema = schema;
+
     schema = yup.mixed().when(dependsOn as any, {
       is: (val: any) => isMatch(val),
-      then: () => schema,
+      then: () => baseSchema,
       otherwise: (s: any) => s.notRequired().nullable(),
     }) as unknown as yup.AnySchema;
   }
