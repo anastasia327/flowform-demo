@@ -99,20 +99,23 @@ function renderSimpleField(
   y: number,
   ensureSpace: (lines?: number) => void
 ): number {
-  ensureSpace(1);
+  ensureSpace(2);
   const rawValue = values[field.name];
   const displayValue = formatValue(field, rawValue);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(90, 90, 90);
-  doc.text(`${field.label}:`, x, y);
+  doc.setFontSize(9.5);
+  doc.setTextColor(110, 110, 110);
+  doc.text(`${field.label}`, x, y);
+  y += LINE_HEIGHT * 0.85;
 
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10.5);
   doc.setTextColor(20, 20, 20);
-  doc.text(displayValue, x + 140, y);
+  doc.text(displayValue, x, y);
   doc.setTextColor(0, 0, 0);
 
-  return y + LINE_HEIGHT;
+  return y + LINE_HEIGHT * 0.9;
 }
 
 function formatValue(field: FieldDefinition, value: any): string {
