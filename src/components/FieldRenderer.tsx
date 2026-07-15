@@ -8,12 +8,13 @@ import {
   RadioGroup,
   Radio,
   FormControl,
-  FormLabel,
   FormHelperText,
+  Box,
 } from "@mui/material";
 import { FieldDefinition } from "../types";
 import { isConditionMet } from "../utils/conditions";
 import { RepeaterField } from "./RepeaterField";
+import { FieldLabel } from "./FieldLabel";
 
 interface FieldRendererProps {
   field: FieldDefinition;
@@ -56,6 +57,8 @@ export function FieldRenderer({
   const errorMessage = fieldError?.message as string | undefined;
 
   if (field.type === "checkbox") {
+    // Checkboxes use an inline label to their right — not affected by the
+    // outlined-border notch issue — so no change needed here.
     return (
       <Controller
         name={name}
@@ -78,35 +81,38 @@ export function FieldRenderer({
 
   if (field.type === "select") {
     return (
-      <Controller
-        name={name}
-        control={control}
-        defaultValue=""
-        render={({ field: rhfField }) => (
-          <TextField
-            {...rhfField}
-            select
-            fullWidth
-            label={field.label}
-            required={field.required}
-            error={!!errorMessage}
-            helperText={errorMessage || field.helperText}
-          >
-            <MenuItem value="">
-              <em>Select…</em>
-            </MenuItem>
-            {(field.options || []).map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
+      <Box>
+        <FieldLabel label={field.label} required={field.required} />
+        <Controller
+          name={name}
+          control={control}
+          defaultValue=""
+          render={({ field: rhfField }) => (
+            <TextField
+              {...rhfField}
+              select
+              fullWidth
+              error={!!errorMessage}
+              helperText={errorMessage || field.helperText}
+            >
+              <MenuItem value="">
+                <em>Select…</em>
               </MenuItem>
-            ))}
-          </TextField>
-        )}
-      />
+              {(field.options || []).map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+        />
+      </Box>
     );
   }
 
   if (field.type === "radio") {
+    // FormLabel here already sits above the RadioGroup (not inside a
+    // notched border), so it's unaffected — kept as-is.
     return (
       <Controller
         name={name}
@@ -114,7 +120,7 @@ export function FieldRenderer({
         defaultValue=""
         render={({ field: rhfField }) => (
           <FormControl error={!!errorMessage} component="fieldset">
-            <FormLabel component="legend">{field.label}</FormLabel>
+            <FieldLabel label={field.label} required={field.required} />
             <RadioGroup {...rhfField} row>
               {(field.options || []).map((opt) => (
                 <FormControlLabel
@@ -134,27 +140,28 @@ export function FieldRenderer({
     );
   }
 
-  // text / email / textarea / date all render as a MUI TextField variant
+  // text / email / textarea / date all render as a plain (unlabeled)
+  // TextField, with FieldLabel placed above it.
   return (
-    <Controller
-      name={name}
-      control={control}
-      defaultValue=""
-      render={({ field: rhfField }) => (
-        <TextField
-          {...rhfField}
-          fullWidth
-          type={field.type === "date" ? "date" : field.type === "email" ? "email" : "text"}
-          label={field.label}
-          placeholder={field.placeholder}
-          required={field.required}
-          multiline={field.type === "textarea"}
-          minRows={field.type === "textarea" ? 3 : undefined}
-          error={!!errorMessage}
-          helperText={errorMessage || field.helperText}
-          InputLabelProps={field.type === "date" ? { shrink: true } : undefined}
-        />
-      )}
-    />
+    <Box>
+      <FieldLabel label={field.label} required={field.required} />
+      <Controller
+        name={name}
+        control={control}
+        defaultValue=""
+        render={({ field: rhfField }) => (
+          <TextField
+            {...rhfField}
+            fullWidth
+            type={field.type === "date" ? "date" : field.type === "email" ? "email" : "text"}
+            placeholder={field.placeholder}
+            multiline={field.type === "textarea"}
+            minRows={field.type === "textarea" ? 3 : undefined}
+            error={!!errorMessage}
+            helperText={errorMessage || field.helperText}
+          />
+        )}
+      />
+    </Box>
   );
 }
