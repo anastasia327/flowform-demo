@@ -71,7 +71,7 @@ function buildFieldSchema(field: FieldDefinition): yup.AnySchema {
   return schema;
 }
 
-function applyRequired(schema: yup.StringSchema, field: FieldDefinition): yup.StringSchema {
+function applyRequired(schema: yup.StringSchema, field: FieldDefinition): yup.AnySchema {
   if (field.required) {
     return schema.required(`${field.label} is required`);
   }
